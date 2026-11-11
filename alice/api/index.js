@@ -147,7 +147,8 @@ export default async function handler(req, res) {
     const text = await generate(question, turns, hits, deadline);
     if (!text) return reply(res, 'Не получилось сформулировать ответ. Попробуй спросить иначе.', turns);
     return reply(res, text, [...turns, { q: clean(question, 130), a: clean(text, 175), topic }]);
-  } catch {
+  } catch (error) {
+    console.error('Gemini failed', error.name, /^upstream_http_\d{3}$/.test(error.message) ? error.message : '');
     return reply(res, 'Не получилось ответить. Попробуй ещё раз.', turns);
   }
 }
