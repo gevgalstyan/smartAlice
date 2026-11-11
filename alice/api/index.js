@@ -45,8 +45,16 @@ async function postJson(url, keyHeader, key, payload, signal) {
     body: JSON.stringify(payload),
     signal
   });
-  if (!result.ok) throw new Error('upstream_http_' + result.status);
-  return result.json();
+  if (!result.ok) {
+  if (url === GEMINI) {
+    const body = await result.json().catch(() => null);
+    const status = body?.error?.status;
+    const reason = body?.error?.details?.find(item => item.reason)?.reason;
+    const safeCode = value => /^[A-Z][A-Z0-9_]{0,63}$/.test(value ?? '') ? value : 'unknown';
+    console.error('Gemini reason', safeCode(status), safeCode(reason));
+  }
+  throw new Error('upstream_http_' + result.status);
+}
 }
 
 async function search(query, signal) {
