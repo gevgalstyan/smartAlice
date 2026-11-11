@@ -55,6 +55,7 @@ async function postJson(url, keyHeader, key, payload, signal) {
   }
   throw new Error('upstream_http_' + result.status);
 }
+return result.json();
 }
 
 async function search(query, signal) {
